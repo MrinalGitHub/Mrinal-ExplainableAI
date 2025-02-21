@@ -1,7 +1,8 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/oegedijk/explainerdashboard/explainerdashboard/master?style=plastic)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/oegedijk/explainerdashboard/explainerdashboard.yml)
 ![https://pypi.python.org/pypi/explainerdashboard/](https://img.shields.io/pypi/v/explainerdashboard.svg)
 ![https://anaconda.org/conda-forge/explainerdashboard/](https://anaconda.org/conda-forge/explainerdashboard/badges/version.svg)
 [![codecov](https://codecov.io/gh/oegedijk/explainerdashboard/branch/master/graph/badge.svg?token=0XU6HNEGBK)](undefined)
+[![Downloads](https://static.pepy.tech/badge/explainerdashboard)](https://pepy.tech/project/explainerdashboard)
 
 # explainerdashboard
 by: Oege Dijk
@@ -11,7 +12,7 @@ that explains the workings of a (scikit-learn compatible) machine
 learning model. The dashboard provides interactive plots on model performance, 
 feature importances, feature contributions to individual predictions, 
 "what if" analysis,
-partial dependence plots, SHAP (interaction) values, visualisation of individual
+partial dependence plots, SHAP (interaction) values, visualization of individual
 decision trees, etc. 
 
 You can also interactively explore components of the dashboard in a 
@@ -145,7 +146,25 @@ ExplainerDashboard(explainer).run()
 `y_test` is actually optional, although some parts of the dashboard like performance
 metrics will obviously not be available: `ExplainerDashboard(ClassifierExplainer(model, X_test)).run()`.
 
-You can export a dashboard to static html with `db.save_html('dashboard.html')`.
+You can export a dashboard to static html with `db.save_html('dashboard.html')`. 
+
+
+<details>
+<summary>You can pass a specific index for the static dashboard to display</summary>
+<p>
+
+```
+ExplainerDashboard(explainer, index=0).save_html('dashboard.html')
+```
+
+or 
+
+
+```
+ExplainerDashboard(explainer, index='Cumings, Mrs. John Bradley (Florence Briggs Thayer)').save_html('dashboard.html')
+```
+</p>
+</details>
 
 For a simplified single page dashboard try `ExplainerDashboard(explainer, simple=True)`.
 
@@ -199,23 +218,25 @@ There are a few tricks to make this less painful:
     values can be very slow to calculate, and often are not needed for analysis.
     For permutation importances you can set the `n_jobs` parameter to speed up
     the calculation in parallel.
-2. Storing the explainer. The calculated properties are only calculated once
+2. Calculate approximate shap values. You can pass approximate=True as a shap parameter by
+   passing `shap_kwargs=dict(approximate=True)` to the explainer initialization. 
+4. Storing the explainer. The calculated properties are only calculated once
     for each instance, however each time when you instantiate a new explainer
     instance they will have to be recalculated. You can store them with
     `explainer.dump("explainer.joblib")` and load with e.g. 
     `ClassifierExplainer.from_file("explainer.joblib")`. All calculated properties
     are stored along with the explainer.
-3. Using a smaller (test) dataset, or using smaller decision trees. 
+5. Using a smaller (test) dataset, or using smaller decision trees. 
     TreeShap computational complexity is `O(TLD^2)`, where `T` is the 
     number of trees, `L` is the maximum number of leaves in any tree and 
     `D` the maximal depth of any tree. So reducing the number of leaves or average
     depth in the decision tree can really speed up SHAP calculations.
-4. Pre-computing shap values. Perhaps you already have calculated the shap values
+6. Pre-computing shap values. Perhaps you already have calculated the shap values
     somewhere, or you can calculate them off on a giant cluster somewhere, or
     your model supports [GPU generated shap values](https://github.com/rapidsai/gputreeshap). 
     You can simply add these pre-calculated shap values to the explainer 
     with `explainer.set_shap_values()` and `explainer.set_shap_interaction_values()` methods.
-5. Plotting only a random sample of points. When you have a lots of observations,
+7. Plotting only a random sample of points. When you have a lots of observations,
     simply rendering the plots may get slow as well. You can pass the `plot_sample`
     parameter to render a (different each time) random sample of observations
     for the various scatter plots in the dashboard. E.g.: 
@@ -517,7 +538,7 @@ In order to reduce the memory footprint there are a number of things you can do:
 2. Setting a lower precision. By default shap values are stored as `'float64'`,
     but you can store them as `'float32'` instead and save half the space:
     ```ClassifierExplainer(model, X_test, y_test, precision='float32')```. You 
-    can also set a lower precision on your `X_test` dataset yourself ofcourse.
+    can also set a lower precision on your `X_test` dataset yourself of course.
 3. For multi class classifier, by default `ClassifierExplainer` calculates
     shap values for all classes. If you're only interested in a single class
     you can drop the other shap values: `explainer.keep_shap_pos_label_only(pos_label)`
@@ -568,3 +589,7 @@ Example notebook on how to design a custom dashboard: [custom_examples.ipynb](no
 You can find an example dashboard at [titanicexplainer.herokuapp.com](http://titanicexplainer.herokuapp.com) 
 
 (source code at [https://github.com/oegedijk/explainingtitanic](https://github.com/oegedijk/explainingtitanic))
+
+## Citation:
+
+A doi can be found at [zenodo](https://zenodo.org/record/7633294)

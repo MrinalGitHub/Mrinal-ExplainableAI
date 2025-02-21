@@ -1,5 +1,4 @@
+___version__ = "0.4.8"
 
-___version__ = "0.4.0"
-
-from .explainers import ClassifierExplainer, RegressionExplainer
-from .dashboards import ExplainerDashboard, ExplainerHub, InlineExplainer
+from .explainers import ClassifierExplainer, RegressionExplainer  # noqa
+from .dashboards import ExplainerDashboard, ExplainerHub, InlineExplainer  # noqa
